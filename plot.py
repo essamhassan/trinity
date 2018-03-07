@@ -3,22 +3,25 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 import matplotlib.dates as mdates
 import numpy as np
+import time
 
 date, bid, ask = np.loadtxt('GBPUSD1d.txt', unpack=True,
         delimiter = ',', converters={0:mdates.strpdate2num('%Y%m%d%H%M%S')})
 
-pattern     = []
-performance = []
+patternAr     = []
+performanceAr = []
 
 def percentChange(start, curr):
-    return (float(curr - start) / start) * 100.0
+    return (float(curr - start) / abs(start)) * 100.0
 
-def patternFinder():
+def getPatterns():
+    startTime =  time.time()
     avg = ((bid+ask)/2)
     x = len(avg)-30
     y = 11
 
     while y < x:
+        pattern = []
         p1  = percentChange(avg[y-10], avg[y-9])
         p2  = percentChange(avg[y-10], avg[y-8])
         p3  = percentChange(avg[y-10], avg[y-7])
@@ -32,13 +35,32 @@ def patternFinder():
 
         outcome = avg[y+20:y+30]
         curr    = avg[y]
+        try:
+            avgOutcome = (sum(outcome)/len(outcome))
+        except Exception as e:
+            print(str(e))
+            avgOutcome = 0
 
-        print(sum(outcome)/len(outcome))
-        print(curr)
-        print('         ')
-        print(p1,p2,p3,p4,p5,p6,p7,p8,p9,p10)
+        futureOutcome = percentChange(curr, avgOutcome)
+        pattern.append(p1)
+        pattern.append(p2)
+        pattern.append(p3)
+        pattern.append(p4)
+        pattern.append(p5)
+        pattern.append(p6)
+        pattern.append(p7)
+        pattern.append(p8)
+        pattern.append(p9)
+        pattern.append(p10)
+
+        patternAr.append(pattern)
+        performanceAr.append(futureOutcome)
+
         y += 1
-
+    endTime = time.time()
+    print(len(patternAr))
+    print(len(performanceAr))
+    print('Pattern storage:', endTime-startTime, ' seconds')
 def graphRaw():
     fig = plt.figure(figsize=(10,7))
     axl = plt.subplot2grid((40,40),(0,0), rowspan=40, colspan=40)
