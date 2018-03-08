@@ -96,7 +96,15 @@ def patternRec(levels):
         xp = range(1, levels+1)
         fig = plt.figure(figsize=(10,6))
         for plot in plots:
+            futureIdx = patternAr.index(plot)
+
+            if performanceAr[futureIdx] > patForRec[levels-1]:
+                pcolor = '#24bc00'
+            else:
+                pcolor = '#d40000'
+
             plt.plot(xp, plot)
+            plt.scatter(35, performanceAr[futureIdx],c=pcolor, alpha=.3 )
         plt.plot(xp, patForRec,'#54fff7', linewidth=3 )
         plt.grid(True)
         plt.title('Matching patterns')
