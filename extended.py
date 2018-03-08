@@ -29,7 +29,9 @@ def getPatterns(levels):
     startTime =  time.time()
     x = len(avg)-30-levels # trace here
     y = 1 + levels
-
+    # Alternative model is to try reversed percentChange "end to start" and benchmark
+    # custom weights for older patterns
+    # opportunity vs accuracy
     while y < x:
         pattern = [0] * levels
         for level in list(reversed(range(levels))):
