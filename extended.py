@@ -65,27 +65,41 @@ def currentPattern(levels):
 
 
 def patternRec(levels):
+    foundMatch = False
+    plots = []
     for pattern in patternAr:
         currentSim = [0] * levels
         for level in range(levels):
             currentSim[level]   = 100.00 - abs(percentChange(pattern[level], patForRec[level]))
             overallSim = sum(currentSim)/float(levels)
 
-            if overallSim > 40:
+            if overallSim > 75:
                 idx = patternAr.index(pattern)
-                print('####################')
+                foundMatch = True
+                """print('####################')
                 print(patForRec)
                 print('===================')
-                print('predicted outcome: ', performanceAr[idx])
+                print('predicted outcome: ', performanceAr[idx])"""
 
-                xp = range(1,levels+1)
-                fig = plt.figure()
+                plots.append(pattern)
+
+                """fig = plt.figure()
                 plt.plot(xp, patForRec)
                 plt.plot(xp, pattern)
-                plt.show()
-                print('===================')
+                plt.show()"""
+                """print('===================')
                 print(pattern)
-                print('####################')
+                print('####################')"""
+    if foundMatch:
+        xp = range(1, levels+1)
+        fig = plt.figure(figsize=(10,6))
+        for plot in plots:
+            plt.plot(xp, plot)
+        plt.plot(xp, patForRec,'#54fff7', linewidth=3 )
+        plt.grid(True)
+        plt.title('Matching patterns')
+        plt.show()
+
 
 
 
@@ -111,7 +125,7 @@ dataLength = int(bid.shape[0])
 
 print('data length is', dataLength)
 
-toLimit = 100
+toLimit = 37000
 levels  = 10
 try:
     levels = int(sys.argv[1])
