@@ -12,6 +12,7 @@ globalStartTime = time.time()
 
 date, bid, ask = np.loadtxt('GBPUSD1d.txt', unpack=True,
             delimiter = ',', converters={0:mdates.strpdate2num('%Y%m%d%H%M%S')})
+allData = ((bid+ask)/2)
 
 def percentChange(start, curr):
     try:
@@ -69,13 +70,15 @@ def currentPattern(levels):
 def patternRec(levels):
     foundMatch = False
     plots = []
+    predictedOutcomes = []
+
     for pattern in patternAr:
         currentSim = [0] * levels
         for level in range(levels):
             currentSim[level]   = 100.00 - abs(percentChange(pattern[level], patForRec[level]))
             overallSim = sum(currentSim)/float(levels)
 
-            if overallSim > 75:
+            if overallSim > 70:
                 idx = patternAr.index(pattern)
                 foundMatch = True
                 """print('####################')
@@ -104,7 +107,18 @@ def patternRec(levels):
                 pcolor = '#d40000'
 
             plt.plot(xp, plot)
+            predictedOutcomes.append(performanceAr[futureIdx])
             plt.scatter(35, performanceAr[futureIdx],c=pcolor, alpha=.3 )
+
+        realOutcomeRange         = allData[toLimit+20:toLimit+30]
+        realOutcomeAverage       = sum(realOutcomeRange)/len(realOutcomeRange)
+        predictedOutcomesAverage = sum(predictedOutcomes)/len(predictedOutcomes)
+
+        realMovement       = percentChange(allData[toLimit], realOutcomeAverage)
+
+        plt.scatter(40, realMovement, c='#54fff7', s=25)
+        plt.scatter(40, predictedOutcomesAverage, c='b', s=25)
+
         plt.plot(xp, patForRec,'#54fff7', linewidth=3 )
         plt.grid(True)
         plt.title('Matching patterns')
@@ -145,8 +159,7 @@ except Exception as e:
 print('Pattern level', levels)
 
 while toLimit < dataLength:
-    avg           = ((bid+ask)/2)
-    avg           = avg[:toLimit]
+    avg           = allData[:toLimit]
     patternAr     = []
     performanceAr = []
     patForRec     = []
